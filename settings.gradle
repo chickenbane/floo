@@ -1,4 +1,4 @@
 rootProject.name = 'floo'
 
 include 'protobuf'
-include 'server'
+include 'server', 'client'

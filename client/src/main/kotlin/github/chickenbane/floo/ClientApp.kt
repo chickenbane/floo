@@ -7,10 +7,10 @@ import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
 
 @SpringBootApplication
-class FlooApplication
+class ClientApp
 
 fun main(args: Array<String>) {
-    runApplication<FlooApplication>(*args)
+    runApplication<ClientApp>(*args)
 }
 
 @ShellComponent
