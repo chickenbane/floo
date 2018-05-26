@@ -9,6 +9,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
 
 def grpcVersion = '1.12.0'
 def protocVersion = '3.5.1-1'

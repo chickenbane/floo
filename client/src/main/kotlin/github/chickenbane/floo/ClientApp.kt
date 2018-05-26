@@ -21,3 +21,15 @@ class FlooShellComponent {
         log.info("working the pole")
     }
 }
+
+@ShellComponent
+class QuoteClientShellComponent(private val client: QuoteClient) {
+
+    @ShellMethod("create a quote")
+    fun create(text: String, author: String) {
+        client.create(text, author)
+    }
+
+    @ShellMethod("find a quote")
+    fun findById(id: String) = client.findById(id)
+}
