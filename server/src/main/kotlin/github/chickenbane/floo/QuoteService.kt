@@ -10,13 +10,14 @@ import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.LoggerFactory
+import org.springframework.boot.info.GitProperties
 import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
 
 @GRpcService
-class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
+class QuoteService(private val gitProperties: GitProperties) : QuoteServiceGrpc.QuoteServiceImplBase() {
 
     private val log = LoggerFactory.getLogger(QuoteService::class.java)
 
@@ -63,7 +64,7 @@ class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
             return
         }
 
-        val from = InetAddress.getLocalHost().hostAddress
+        val from = "host=${InetAddress.getLocalHost().hostAddress} gitSha=${gitProperties.shortCommitId}"
 
         val response = FindQuoteByIdResponse.newBuilder()
                 .setId(request.id)
