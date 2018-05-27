@@ -19,12 +19,14 @@ class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
     private val log = LoggerFactory.getLogger(QuoteService::class.java)
 
     private val startingQuotes = listOf(
-            Quote("Float like a butterfly, sting like a bee", "Madonna")
+            Quote("Float like a butterfly, sting like a bee", "Madonna"),
+            Quote("Ask not what your country can do for you", "Trump")
     )
 
     private val nextMapId = AtomicLong()
     private val map = ConcurrentHashMap<Long, Quote>().apply {
         putAll(startingQuotes.map { Pair(nextMapId.incrementAndGet(), it) })
+        log.info("initial quotes=$this")
     }
 
     override fun create(request: CreateQuoteRequest, responseObserver: StreamObserver<CreateQuoteResponse>) {
