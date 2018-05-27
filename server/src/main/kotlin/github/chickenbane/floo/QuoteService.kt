@@ -10,13 +10,22 @@ import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.LoggerFactory
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 @GRpcService
 class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
+
     private val log = LoggerFactory.getLogger(QuoteService::class.java)
-    private val map = ConcurrentHashMap<String, Quote>()
+
+    private val startingQuotes = listOf(
+            Quote("Float like a butterfly, sting like a bee", "Madonna")
+    )
+
+    private val nextMapId = AtomicLong()
+    private val map = ConcurrentHashMap<Long, Quote>().apply {
+        putAll(startingQuotes.map { Pair(nextMapId.incrementAndGet(), it) })
+    }
 
     override fun create(request: CreateQuoteRequest, responseObserver: StreamObserver<CreateQuoteResponse>) {
         log.debug("create: request.author=${request.author} request.text=${request.text}")
@@ -29,15 +38,22 @@ class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
             responseObserver.onError(StatusRuntimeException(Status.ALREADY_EXISTS))
             return
         }
-        val key = UUID.randomUUID().toString()
-        map[key] = quote  // todo check key collision?
-        responseObserver.onNext(CreateQuoteResponse.newBuilder().setId(key).build())
+        val key = nextMapId.incrementAndGet()
+        map[key] = quote
+        responseObserver.onNext(CreateQuoteResponse.newBuilder().setId(key.toString()).build())
         responseObserver.onCompleted()
     }
 
     override fun findById(request: FindQuoteByIdRequest, responseObserver: StreamObserver<FindQuoteByIdResponse>) {
         log.debug("findById: request.id=${request.id}")
-        val quote = map[request.id]
+        val key: Long
+        try {
+            key = request.id.toLong()
+        } catch (e: NumberFormatException) {
+            responseObserver.onError(StatusRuntimeException(Status.INVALID_ARGUMENT))
+            return
+        }
+        val quote = map[key]
         if (quote == null) {
             responseObserver.onError(StatusRuntimeException(Status.NOT_FOUND))
             return

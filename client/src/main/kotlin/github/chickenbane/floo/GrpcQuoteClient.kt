@@ -9,20 +9,19 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
 @Configuration
-class QuoteClientConfig {
-
+class GrpcConfig {
     @Bean
     fun channel(@Value("\${quote.server.host}") host: String,
                 @Value("\${quote.server.port}") port: Int): ManagedChannel =
             ManagedChannelBuilder.forAddress(host, port).usePlaintext().build()
 }
 
-@Service
-class QuoteClient(channel: ManagedChannel) {
-    private val log = LoggerFactory.getLogger(QuoteClient::class.java)
+@Component
+class GrpcQuoteClient(channel: ManagedChannel) {
+    private val log = LoggerFactory.getLogger(GrpcQuoteClient::class.java)
     private val stub = QuoteServiceGrpc.newBlockingStub(channel)
 
     fun create(text: String, author: String): String {
