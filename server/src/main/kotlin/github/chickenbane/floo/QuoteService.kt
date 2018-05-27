@@ -10,8 +10,10 @@ import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.LoggerFactory
+import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
+
 
 @GRpcService
 class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
@@ -60,10 +62,14 @@ class QuoteService : QuoteServiceGrpc.QuoteServiceImplBase() {
             responseObserver.onError(StatusRuntimeException(Status.NOT_FOUND))
             return
         }
+
+        val from = InetAddress.getLocalHost().hostAddress
+
         val response = FindQuoteByIdResponse.newBuilder()
                 .setId(request.id)
                 .setAuthor(quote.author)
                 .setText(quote.text)
+                .setServer(from)
                 .build()
         responseObserver.onNext(response)
         responseObserver.onCompleted()
