@@ -35,13 +35,13 @@ class GrpcQuoteClient(channel: ManagedChannel) {
         return response.id
     }
 
-    fun findById(id: String): Quote {
+    fun findById(id: String): FindResponse {
         log.debug("findById: id=$id")
         val request = FindQuoteByIdRequest.newBuilder().setId(id).build()
         val response = stub.findById(request)
         log.info("findById: response.text=${response.text} response.author=${response.author} response.server=${response.server}")
-        return Quote(response.text, response.author, response.server)
+        return FindResponse(response.text, response.author, response.server)
     }
 }
 
-data class Quote(val text: String, val author: String, val server: String)
+data class FindResponse(val text: String, val author: String, val server: String)
