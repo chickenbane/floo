@@ -4,33 +4,20 @@ import github.chickenbane.proto.CreateQuoteRequest
 import github.chickenbane.proto.FindQuoteByIdRequest
 import github.chickenbane.proto.QuoteServiceGrpc
 import github.chickenbane.proto.QuoteServiceGrpc.QuoteServiceBlockingStub
-import github.saturnism.k8sapi.KubernetesNameResolverProvider
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
-import io.grpc.util.RoundRobinLoadBalancerFactory
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Configuration
 class GrpcConfig {
     @Bean
-    @Profile("local")
-    fun localChannel(@Value("\${quote.server.host}") host: String,
-                     @Value("\${quote.server.port}") port: Int): ManagedChannel =
+    fun localChannel(@Value("\${quote.proxy.host}") host: String,
+                     @Value("\${quote.proxy.port}") port: Int): ManagedChannel =
             ManagedChannelBuilder.forAddress(host, port).usePlaintext().build()
-
-    @Bean
-    @Profile("default")
-    fun channel(@Value("\${floo.service.target}") target: String): ManagedChannel =
-            ManagedChannelBuilder.forTarget(target)
-                    .nameResolverFactory(KubernetesNameResolverProvider())
-                    .loadBalancerFactory(RoundRobinLoadBalancerFactory.getInstance())
-                    .usePlaintext()
-                    .build()
 }
 
 @Component

@@ -5,10 +5,10 @@ steps:
   args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-server:$COMMIT_SHA', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-server:latest', '.' ]
   dir: 'server'
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-client:$COMMIT_SHA', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-client:latest', '.' ]
-  dir: 'client'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest', '.' ]
+  dir: 'proxy'
 images:
 - 'gcr.io/$PROJECT_ID/$REPO_NAME-server:$COMMIT_SHA'
 - 'gcr.io/$PROJECT_ID/$REPO_NAME-server:latest'
-- 'gcr.io/$PROJECT_ID/$REPO_NAME-client:$COMMIT_SHA'
-- 'gcr.io/$PROJECT_ID/$REPO_NAME-client:latest'
+- 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA'
+- 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest'
