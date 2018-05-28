@@ -1,0 +1,18 @@
+
+apply plugin: 'org.springframework.boot'
+
+
+dependencies {
+    compile project(':protobuf')
+
+    compile('org.lognet:grpc-spring-boot-starter:2.3.2')
+
+    compile('org.springframework.boot:spring-boot-starter')
+    compile('com.fasterxml.jackson.module:jackson-module-kotlin')
+
+    // https://github.com/fabric8io/kubernetes-client
+    compile 'io.fabric8:kubernetes-client:3.1.12'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+}

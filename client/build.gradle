@@ -15,6 +15,9 @@ dependencies {
     // https://github.com/fabric8io/kubernetes-client
     compile 'io.fabric8:kubernetes-client:3.1.12'
 
+    // TODO keep?
+    compile('org.lognet:grpc-spring-boot-starter:2.3.2')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
 }
