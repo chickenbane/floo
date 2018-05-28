@@ -9,7 +9,6 @@ dependencies {
     //compile('org.springframework.boot:spring-boot-starter-web')
     compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 
-    // https://github.com/kubernetes-client/java
     compile 'io.kubernetes:client-java:1.0.0'
 
     testCompile('org.springframework.boot:spring-boot-starter-test')

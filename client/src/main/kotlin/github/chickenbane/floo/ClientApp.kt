@@ -20,35 +20,35 @@ class QuoteClient(private val quoteClient: GrpcQuoteClient, private val k8sClien
 
     private var pf: K8sPortForward? = null
 
+    private fun pfAvail(): Availability = if (pf == null) Availability.unavailable("you are not port forwarding") else Availability.available()
+
     @ShellMethod("forward floo-proxy")
     fun forward(): String {
         val proxyPods = k8sClient.defaultPods("app=floo-proxy")
         if (proxyPods.isEmpty()) {
             return "floo-proxy not running"
         }
-        val flooName = proxyPods.first().metadata.name
-        pf = k8sClient.forwardDefaultPodPort(flooName, 6565)
-        return "forwarding $flooName"
+        val podName = proxyPods.first().metadata.name
+        pf = k8sClient.forwardDefaultPodPort(podName, 6565)
+        return "forwarding $podName"
     }
 
     @ShellMethod("create a quote")
     fun create(text: String, author: String) = quoteClient.create(text, author)
 
-    fun createAvailability(): Availability =
-            if (pf == null) Availability.unavailable("not port forwarding") else Availability.available()
+    fun createAvailability() = pfAvail()
 
     @ShellMethod("find a quote")
     fun findById(id: String) = quoteClient.findById(id)
 
-    fun findByIdAvailability(): Availability =
-            if (pf == null) Availability.unavailable("not port forwarding") else Availability.available()
+    fun findByIdAvailability() = pfAvail()
 }
 
 @ShellComponent
 class KubernetesClient(private val client: K8sClient) {
 
-    @ShellMethod("get pod names in the default namespace, optionally providing a label")
-    fun podNames(@ShellOption(defaultValue = "") label: String): List<String> =
-            client.defaultPods(label).map { it.metadata.name }
+    @ShellMethod("get pod names in the default namespace")
+    fun podNames(@ShellOption(defaultValue = "", help = "label selector, eg: 'app=floo-proxy'") labelSelector: String): List<String> =
+            client.defaultPods(labelSelector).map { it.metadata.name }
 
 }

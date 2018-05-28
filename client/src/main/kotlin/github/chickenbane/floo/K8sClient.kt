@@ -9,6 +9,10 @@ import io.kubernetes.client.util.Config
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
+import java.io.PrintStream
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.Socket
 
 
 @org.springframework.context.annotation.Configuration
@@ -27,19 +31,56 @@ class K8sClient(private val client: ApiClient) {
     private val log = LoggerFactory.getLogger(K8sClient::class.java)
     private val api = CoreV1Api(client)
 
-    fun defaultPods(label: String = ""): List<V1Pod> {
-        val labelSelector = if (label.isBlank()) null else label
-        val list = api.listNamespacedPod(DEFAULT_NAMESPACE, null, null, null, null, labelSelector, null, null, null, null)
+    fun defaultPods(labelSelector: String = ""): List<V1Pod> {
+        val label = if (labelSelector.isBlank()) null else labelSelector
+        val list = api.listNamespacedPod(DEFAULT_NAMESPACE, null, null, null, null, label, null, null, null, null)
         return list.items
     }
 
-    fun forwardDefaultPodPort(podName: String, port: Int): K8sPortForward {
-        val forward = PortForward(client)
-        return K8sPortForward(forward.forward(DEFAULT_NAMESPACE, podName, listOf(port)), port)
-    }
+    fun forwardDefaultPodPort(podName: String, port: Int) = K8sPortForward(client, podName, port)
 
 }
 
-class K8sPortForward(private val forwardResult: PortForward.PortForwardResult, private val port: Int) {
+class K8sPortForward(client: ApiClient, podName: String, private val port: Int) {
+    private val result = PortForward(client).forward(DEFAULT_NAMESPACE, podName, listOf(port))
+    private val log = LoggerFactory.getLogger(K8sPortForward::class.java)
 
+    init {
+        log.warn("Starting k8sPortForward")
+    }
+
+    private val serverSocket = ServerSocket(port, 0, InetAddress.getByName(null))
+
+
+    private val socket: Socket by lazy {
+        serverSocket.accept()
+    }
+
+    private val outputThread = Thread(outputRunnable()).also {
+        log.warn("start outputThread")
+        it.start()
+    }
+
+    private fun outputRunnable() = Runnable {
+        log.warn("start outputRunnable")
+        val output = result.getOutboundStream(port)
+        while (true) {
+            socket.getInputStream().copyTo(output)
+        }
+    }
+
+    private val inputThread = Thread(inputRunnable()).also {
+        log.warn("start inputThread")
+        it.start()
+    }
+
+    private fun inputRunnable() = Runnable {
+        log.warn("start inputRunnable")
+        val input = result.getInputStream(port)
+        while (true) {
+            input.copyTo(socket.getOutputStream())
+        }
+    }
+
+    private val error = PrintStream(result.getErrorStream(port), true)
 }
