@@ -15,22 +15,9 @@ https://github.com/kubernetes-client/java
 
 ### Running and port-forwarding the proxy
 
-Build and run the client: `./floo`
+Build, port-forward the proxy, and run the client: `./floo`
 (Spring Boot's `bootRun` + Spring Shell play oddly together)
 
-Before using the official java kubernetes client library, I was port-forwarding like an animal:
-```
-# port-forward proxy
-kubectl port-forward $(kubectl get pods -l app=floo-proxy -o=jsonpath='{.items[0].metadata.name}') 6565 &
-pfpid=$!
-
-# run the client
-./client/build/libs/client.jar
-
-# stop port-forwarding
-trap "kill $pfpid && kill $$" EXIT
-```
-(Now the client supports the `forward` command.)
 
 ## Proxy
 
