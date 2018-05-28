@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
 
+# build client
 ./gradlew :client:build
+
+# port-forward proxy
+kubectl port-forward $(kubectl get pods -l app=floo-proxy -o=jsonpath='{.items[0].metadata.name}') 6565 &
+pfpid=$!
+
+# run the client
 ./client/build/libs/client.jar
+
+# stop port-forwarding
+trap "kill $pfpid && kill $$" EXIT

@@ -13,3 +13,5 @@ Running the client in k8s:
 Port-forward the server in k8s:
 `kubectl port-forward $(kubectl get pods -l app=floo-server -o=jsonpath='{.items[0].metadata.name}') 6565`
 
+Run the proxy in k8s:
+`kubectl run floo-proxy --image=gcr.io/talknerdy-one/github-chickenbane-floo-proxy:latest`
