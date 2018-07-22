@@ -53,6 +53,7 @@ public class KubernetesNameResolver extends NameResolver {
     }
 
     @Override
+    @GuardedBy("this")
     public void start(Listener listener) {
         this.listener = listener;
         refresh();

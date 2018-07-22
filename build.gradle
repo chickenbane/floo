@@ -1,15 +1,18 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.41'
+        kotlinVersion = '1.2.51'
         springBootVersion = '2.0.2.RELEASE'
     }
     repositories {
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.0.14"
+
     }
 }
 
@@ -21,6 +24,7 @@ subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'kotlin-spring'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: "net.ltgt.errorprone"
 
 
     compileKotlin {
@@ -46,5 +50,6 @@ subprojects {
     dependencies {
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         compile("org.jetbrains.kotlin:kotlin-reflect")
+        errorprone 'com.google.errorprone:error_prone_core:2.3.1'
     }
 }

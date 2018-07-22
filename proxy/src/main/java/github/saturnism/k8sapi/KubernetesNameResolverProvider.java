@@ -38,7 +38,7 @@ public class KubernetesNameResolverProvider extends NameResolverProvider {
             Preconditions.checkArgument(targetPath.startsWith("/"),
                     "the path component (%s) of the target (%s) must start with '/'", targetPath, targetUri);
 
-            String[] parts = targetPath.split("/");
+            String[] parts = targetPath.split("/", 4);
             if (parts.length != 4) {
                 throw new IllegalArgumentException("Must be formatted like kubernetes:///{namespace}/{service}/{port}");
             }
