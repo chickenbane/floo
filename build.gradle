@@ -2,6 +2,7 @@ buildscript {
     ext {
         kotlinVersion = '1.2.51'
         springBootVersion = '2.0.2.RELEASE'
+        junitVersion = '5.2.0'
     }
     repositories {
         mavenCentral()
@@ -51,5 +52,14 @@ subprojects {
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         compile("org.jetbrains.kotlin:kotlin-reflect")
         errorprone 'com.google.errorprone:error_prone_core:2.3.1'
+
+        testCompile "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+        testCompile "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    }
+
+    test {
+        useJUnitPlatform()
+        failFast = true
     }
 }

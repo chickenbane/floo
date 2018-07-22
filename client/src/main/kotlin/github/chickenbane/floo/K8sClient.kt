@@ -1,22 +1,22 @@
 package github.chickenbane.floo
 
 import io.kubernetes.client.ApiClient
-import io.kubernetes.client.Configuration
 import io.kubernetes.client.apis.CoreV1Api
 import io.kubernetes.client.models.V1Pod
 import io.kubernetes.client.util.Config
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Component
 
 
-@org.springframework.context.annotation.Configuration
+@Configuration
 class K8sConfig {
 
     @Bean
     fun client(): ApiClient = Config.defaultClient().also {
-        Configuration.setDefaultApiClient(it)
+        io.kubernetes.client.Configuration.setDefaultApiClient(it)
     }
 }
 
