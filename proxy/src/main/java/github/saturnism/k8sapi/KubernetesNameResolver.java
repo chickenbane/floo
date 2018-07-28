@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,9 +79,7 @@ public class KubernetesNameResolver extends NameResolver {
             if (endpoints == null) {
                 // Didn't find anything, retrying
                 ScheduledExecutorService timerService = SharedResourceHolder.get(timerServiceResource);
-                timerService.schedule(() -> {
-                    refresh();
-                }, 30, TimeUnit.SECONDS);
+                ScheduledFuture<?> schedule = timerService.schedule(this::refresh, 30, TimeUnit.SECONDS);
                 return;
             }
 
@@ -127,6 +126,8 @@ public class KubernetesNameResolver extends NameResolver {
                             case DELETED:
                                 listener.onAddresses(Collections.emptyList(), Attributes.EMPTY);
                                 return;
+                            default:
+                                break;
                         }
                     }
 
